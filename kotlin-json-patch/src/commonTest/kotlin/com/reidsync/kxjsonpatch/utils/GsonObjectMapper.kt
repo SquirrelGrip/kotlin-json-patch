@@ -5,12 +5,10 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 
 class GsonObjectMapper {
-    fun readTree(jsondata: String?): JsonElement {
+    fun readTree(jsondata: String?): JsonElement =
         if (jsondata != null) {
-            return Json.parseToJsonElement(jsondata)
+            Json.parseToJsonElement(jsondata)
+        } else {
+            JsonNull
         }
-        else {
-            return JsonNull
-        }
-    }
 }

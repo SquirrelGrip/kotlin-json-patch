@@ -3,41 +3,17 @@ package com.reidsync.kxjsonpatch
 import com.reidsync.kxjsonpatch.utils.GsonObjectMapper
 import kotlinx.serialization.json.*
 
-/*
-* Copyright 2016 flipkart.com kjsonpatch.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-class PatchTestCase private constructor(
+class PatchTestCase(
     val isOperation: Boolean,
-    node: JsonObject
+    val node: JsonObject
 ) {
-    private val node: JsonObject
-    fun getNode(): JsonObject {
-        return node
-    }
-
-    init {
-        this.node = node
-    }
-
     companion object {
         private val MAPPER = GsonObjectMapper()
-        //fun load(fileName: String): Collection<PatchTestCase> {
+
         fun load(testData: String): Collection<PatchTestCase> {
             val tree: JsonElement = MAPPER.readTree(testData)
-            val result: MutableList<PatchTestCase> = ArrayList<PatchTestCase>()
-            for (node in tree.jsonObject.get("errors")!!.jsonArray) {
+            val result: MutableList<PatchTestCase> = ArrayList()
+            for (node in tree.jsonObject["errors"]!!.jsonArray) {
                 if (isEnabled(node)) {
                     result.add(PatchTestCase(false, node.jsonObject))
                 }
@@ -51,7 +27,7 @@ class PatchTestCase private constructor(
         }
 
         private fun isEnabled(node: JsonElement): Boolean {
-            val disabled: JsonElement? = node.jsonObject.get("disabled")
+            val disabled: JsonElement? = node.jsonObject["disabled"]
             return (disabled == null || !disabled.jsonPrimitive.boolean)
         }
     }

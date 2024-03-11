@@ -1,20 +1,4 @@
 package com.reidsync.kxjsonpatch.lcs
-/*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 /**
  * This interface should be implemented by user object to walk
@@ -127,19 +111,19 @@ interface CommandVisitor<T> {
 	 *
 	 * @param object object to insert (this object comes from the second sequence)
 	 */
-	fun visitInsertCommand(`object`: T)
+	fun visitInsertCommand(t: T)
 
 	/**
 	 * Method called when a keep command is encountered.
 	 *
 	 * @param object object to keep (this object comes from the first sequence)
 	 */
-	fun visitKeepCommand(`object`: T)
+	fun visitKeepCommand(t: T)
 
 	/**
 	 * Method called when a delete command is encountered.
 	 *
 	 * @param object object to delete (this object comes from the first sequence)
 	 */
-	fun visitDeleteCommand(`object`: T)
+	fun visitDeleteCommand(t: T)
 }

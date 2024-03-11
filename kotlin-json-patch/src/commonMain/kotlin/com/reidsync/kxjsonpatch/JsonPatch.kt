@@ -1,29 +1,11 @@
-/*
- * Copyright 2016 flipkart.com zjsonpatch.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
-*/
-
 package com.reidsync.kxjsonpatch
 
+import com.reidsync.kxjsonpatch.Operation.*
 import kotlinx.serialization.json.*
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
 object JsonPatch {
-    internal var op = Operations()
-    internal var consts = Constants()
-
     private fun getPatchAttr(jsonNode: JsonObject, attr: String): JsonElement {
         val child = jsonNode.get(attr) ?: throw InvalidJsonPatchException("Invalid JSON Patch payload (missing '$attr' field)")
         return child
@@ -47,48 +29,47 @@ object JsonPatch {
             val jsonNode_ = operations.next()
             if (jsonNode_ !is JsonObject) throw InvalidJsonPatchException("Invalid JSON Patch payload (not an object)")
             val jsonNode = jsonNode_.jsonObject
-            val operation = op.opFromName(getPatchAttr(jsonNode.jsonObject, consts.OP).toString().replace("\"".toRegex(), ""))
-            val path = getPath(getPatchAttr(jsonNode, consts.PATH))
+            val operation = Operations.opFromName(getPatchAttr(jsonNode.jsonObject, Constants.OP).toString().replace("\"".toRegex(), ""))
+            val path = getPath(getPatchAttr(jsonNode, Constants.PATH))
 
             when (operation) {
-                op.REMOVE -> {
+                REMOVE -> {
                     processor.edit { remove(path) }
                 }
 
-                op.ADD -> {
+                ADD -> {
                     val value: JsonElement
                     if (!flags.contains(CompatibilityFlags.MISSING_VALUES_AS_NULLS))
-                        value = getPatchAttr(jsonNode, consts.VALUE)
+                        value = getPatchAttr(jsonNode, Constants.VALUE)
                     else
-                        value = getPatchAttrWithDefault(jsonNode, consts.VALUE, JsonNull)
+                        value = getPatchAttrWithDefault(jsonNode, Constants.VALUE, JsonNull)
                     processor.edit { add(path, value) }
                 }
 
-                op.REPLACE -> {
+                REPLACE -> {
                     val value: JsonElement
                     if (!flags.contains(CompatibilityFlags.MISSING_VALUES_AS_NULLS))
-                        value = getPatchAttr(jsonNode, consts.VALUE)
+                        value = getPatchAttr(jsonNode, Constants.VALUE)
                     else
-                        value = getPatchAttrWithDefault(jsonNode, consts.VALUE, JsonNull)
+                        value = getPatchAttrWithDefault(jsonNode, Constants.VALUE, JsonNull)
                     processor.edit { replace(path, value) }
                 }
 
-                op.MOVE -> {
-                    val fromPath = getPath(getPatchAttr(jsonNode, consts.FROM))
+                MOVE -> {
+                    val fromPath = getPath(getPatchAttr(jsonNode, Constants.FROM))
                     processor.edit { move(fromPath, path) }
                 }
 
-                op.COPY -> {
-                    val fromPath = getPath(getPatchAttr(jsonNode, consts.FROM))
+                COPY -> {
+                    val fromPath = getPath(getPatchAttr(jsonNode, Constants.FROM))
                     processor.edit { copy(fromPath, path) }
                 }
 
-                op.TEST -> {
-                    val value: JsonElement
-                    if (!flags.contains(CompatibilityFlags.MISSING_VALUES_AS_NULLS))
-                        value = getPatchAttr(jsonNode, consts.VALUE)
+                TEST -> {
+                    val value = if (!flags.contains(CompatibilityFlags.MISSING_VALUES_AS_NULLS))
+                        getPatchAttr(jsonNode, Constants.VALUE)
                     else
-                        value = getPatchAttrWithDefault(jsonNode, consts.VALUE, JsonNull)
+                        getPatchAttrWithDefault(jsonNode, Constants.VALUE, JsonNull)
                     processor.edit { test(path, value) }
                 }
             }

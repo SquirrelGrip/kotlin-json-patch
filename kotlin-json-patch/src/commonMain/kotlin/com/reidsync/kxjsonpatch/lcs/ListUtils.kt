@@ -1,9 +1,5 @@
 package com.reidsync.kxjsonpatch.lcs
 
-/**
- * code extracted from Apache Commons Collections 4.1
- * Created by daely on 7/22/2016.
- */
 object ListUtils {
     //-----------------------------------------------------------------------
     /**
@@ -53,11 +49,7 @@ object ListUtils {
      * A helper class used to construct the longest common subsequence.
      */
     private class LcsVisitor<E> : CommandVisitor<E> {
-        private val sequence: ArrayList<E>
-
-        init {
-            sequence = ArrayList<E>()
-        }
+        private val sequence: ArrayList<E> = ArrayList<E>()
 
         override fun visitInsertCommand(`object`: E) {}
         override fun visitDeleteCommand(`object`: E) {}
